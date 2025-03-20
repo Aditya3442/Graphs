@@ -1,0 +1,38 @@
+class Pair{
+    int node;
+    int dst;
+    Pair(int node , int dst) {
+        this.node = node;
+        this.dst = dst;
+    }
+}
+class Solution {
+    // Function to find the shortest path from a source node to all other nodes
+    public int[] shortestPath(ArrayList<ArrayList<Integer>> adj, int src) {
+        // code here
+        int n = adj.size();
+        int dist[] = new int[n];
+        Arrays.fill(dist , (int)(1e9 + 7));
+        
+        Queue<Pair> q = new LinkedList<>();
+        dist[src] = 0;
+        q.offer(new Pair(src , 0));
+        
+        while(!q.isEmpty()) {
+            Pair p = q.poll();
+            int index = p.node;
+            int d = p.dst;
+            for(int x : adj.get(index)) {
+                if(d + 1 < dist[x]) {
+                    dist[x] = d + 1;
+                    q.offer(new Pair(x , dist[x]));
+                }
+            }
+        }
+        for(int i = 0; i < n; i++) {
+            if(dist[i] == (int)(1e9 + 7)) 
+               dist[i] = -1;
+        }
+        return dist;
+    }
+}
