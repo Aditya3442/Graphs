@@ -1,0 +1,51 @@
+class Solution {
+    public int dfs(int index , boolean[] visited , int[] parent , int id , List<List<int[]>> adj) {
+         visited[index] = true;
+         parent[index] = id;
+         int and = -1;
+         for(int[] arr : adj.get(index)) {
+             int v = arr[0];
+             int wt = arr[1];
+             and &= wt;
+             if(!visited[v]) {
+                and &= dfs(v , visited , parent , id , adj);
+             }
+         }
+         return and;
+    }
+    public int[] minimumCost(int n, int[][] edges, int[][] query) {
+        List<List<int[]>> adj = new ArrayList<>();
+        for(int i = 0; i < n; i++) {
+            adj.add(new ArrayList<>());
+        }
+        for(int i = 0; i < edges.length; i++) {
+            adj.get(edges[i][0]).add(new int[]{edges[i][1] , edges[i][2]});
+            adj.get(edges[i][1]).add(new int[]{edges[i][0] , edges[i][2]});
+        }
+
+        boolean visited[] = new boolean[n];
+        int parent[] = new int[n];
+        int id = 0;
+        List<Integer> ans = new ArrayList<>();
+
+        for(int i = 0; i < n; i++) {
+             if(!visited[i]) {
+                ans.add(dfs(i , visited , parent , id , adj));
+                id++;
+             }
+        }
+        int result[] = new int[query.length];
+        for(int i = 0; i < query.length; i++) {
+            int q1 = query[i][0];
+            int q2 = query[i][1];
+
+            if(parent[q1] != parent[q2]) {
+                result[i] = -1;
+            }
+            else {
+                result[i] = ans.get(parent[q1]);
+            }
+        }
+        return result;
+    }
+}
