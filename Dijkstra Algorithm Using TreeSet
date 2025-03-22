@@ -1,0 +1,54 @@
+
+/*
+class iPair {
+    int first, second;
+
+    iPair(int first, int second) {
+        this.first = first;
+        this.second = second;
+    }
+}
+*/
+
+class iComparator implements Comparator<iPair> {
+    public int compare(iPair a , iPair b) {
+       if(a.second != b.second)
+         return a.second - b.second;
+       return a.first - b.first;
+    }
+    
+}
+// User function Template for Java
+class Solution {
+    // Function to find the shortest distance of all the vertices
+    // from the source vertex src.
+    ArrayList<Integer> dijkstra(ArrayList<ArrayList<iPair>> adj, int src) {
+        // Write your code here
+        int n = adj.size();
+        
+        ArrayList<Integer> list = new ArrayList<>();
+        for(int i = 0; i < n; i++) {
+            list.add(Integer.MAX_VALUE);
+        }
+        list.set(src , 0);
+        TreeSet<iPair> set = new TreeSet<>(new iComparator());
+        set.add(new iPair(src , 0));
+        
+        while(!set.isEmpty()) {
+            iPair p = set.pollFirst();
+            int node = p.first;
+            int distance = p.second;
+            
+            for(iPair x : adj.get(node)) {
+                int i = x.first;
+                int j = x.second;
+                
+                if(distance + j < list.get(i)) {
+                    list.set(i , distance + j);
+                    set.add(new iPair(i , distance + j));
+                }
+            }
+        }
+        return list;
+    }
+}
