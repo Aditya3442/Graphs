@@ -1,0 +1,57 @@
+class Solution {
+    public int dfs(int index , boolean visited[] , List<List<Integer>> adj1 , int k) {
+        if(k < 0)
+          return 0;
+        visited[index] = true;
+        int ans = 1;
+        for(int x : adj1.get(index)) {
+            if(!visited[x]) {
+               ans += dfs(x , visited , adj1 , k - 1);
+            }
+        }
+        return ans;
+    }
+    public int[] maxTargetNodes(int[][] edges1, int[][] edges2, int k) {
+        int n = edges1.length + 1;
+        int m = edges2.length + 1;
+        int[] ans = new int[n];
+
+        List<List<Integer>> adj1 = new ArrayList<>();
+        for(int i = 0; i < n; i++) {
+            adj1.add(new ArrayList<>());
+        }
+        for(int arr[] : edges1) {
+            int u = arr[0];
+            int v = arr[1];
+            adj1.get(u).add(v);
+            adj1.get(v).add(u);
+        }
+
+        List<List<Integer>> adj2 = new ArrayList<>();
+        for(int i = 0; i < m; i++) {
+            adj2.add(new ArrayList<>());
+        }
+        for(int arr[] : edges2) {
+            int u = arr[0];
+            int v = arr[1];
+            adj2.get(u).add(v);
+            adj2.get(v).add(u);
+        }
+
+        for(int i = 0; i < n; i++) {
+            boolean visited[] = new boolean[n];
+            ans[i] = dfs(i , visited , adj1 , k);
+        }
+
+        int maxi = Integer.MIN_VALUE;
+        for(int i = 0; i < m; i++) {
+            boolean visited[] = new boolean[m];
+            maxi = Math.max(maxi , dfs(i , visited , adj2 , k - 1));
+        }
+
+        for(int i = 0; i < ans.length; i++) {
+            ans[i] += maxi;
+        }
+        return ans;
+    }
+}
