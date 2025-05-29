@@ -1,0 +1,54 @@
+class Solution {
+    List<Integer> size = new ArrayList<>();
+    List<Integer> parent = new ArrayList<>();
+    public int findParent(int node) {
+        if(node == parent.get(node))
+          return node;
+        int n = findParent(parent.get(node));
+        parent.set(node , n);
+        return n;
+    }
+    public void unionBySize(int u , int v) {
+        int pu = findParent(u);
+        int pv = findParent(v);
+
+        if(pu == pv) {
+            return;
+        }
+
+        if(size.get(pu) < size.get(pv)) {
+           parent.set(pu , pv);
+           pv += size.get(pu);
+        }
+        else {
+           parent.set(pv , pu);
+           pu += size.get(pv);
+
+        }
+    }
+
+    public int makeConnected(int n, int[][] connections) {
+        int totalwires = connections.length;
+        if(totalwires < n -1)
+          return -1;
+        for(int i = 0; i < n; i++) {
+            size.add(1);
+            parent.add(i);
+        }
+        for(int i = 0; i < connections.length; i++) {
+            int u = connections[i][0];
+            int v = connections[i][1];
+            unionBySize(u , v);
+        }
+
+        int ans = 0;
+        for(int i = 0; i < parent.size(); i++) {
+            if(i == parent.get(i)) {
+                ans++;
+            }
+        }
+        int need = ans - 1;
+        return need;
+        
+    }
+}
