@@ -1,0 +1,75 @@
+class Solution {
+    public void dfs(int index , int[] count , int[] mark , boolean[] visited , List<List<Integer>> adj) {
+         visited[index] = true;
+         if(mark[index] == 0) {
+             count[0]++;
+         }
+         else {
+            count[1]++;
+         }
+         for(int x : adj.get(index)) {
+            if(!visited[x]) {
+                if(mark[index] == 0) {
+                    mark[x] = 1;
+                    dfs(x , count , mark , visited , adj);
+                }
+                else {
+                    mark[x] = 0;
+                    dfs(x , count , mark , visited , adj);
+                }
+            }
+         }
+    }
+    public int[] maxTargetNodes(int[][] edges1, int[][] edges2) {
+        int n = edges1.length + 1;
+        List<List<Integer>> adj1 = new ArrayList<>();
+        for(int i = 0; i < n; i++) {
+            adj1.add(new ArrayList());
+        }
+        for(int[] arr : edges1) {
+            int u = arr[0];
+            int v = arr[1];
+            adj1.get(u).add(v);
+            adj1.get(v).add(u);
+        }
+
+        int m = edges2.length + 1;
+        List<List<Integer>> adj2 = new ArrayList<>();
+        for(int i = 0; i < m; i++) {
+            adj2.add(new ArrayList());
+        }
+        for(int arr[] : edges2) {
+            int u = arr[0];
+            int v = arr[1];
+            adj2.get(u).add(v);
+            adj2.get(v).add(u);
+        }
+
+        int countA[] = new int[2];
+        int markA[] = new int[n];
+        Arrays.fill(markA , -1);
+        markA[0] = 0;
+        boolean[] visited = new boolean[n];
+        dfs(0 , countA , markA , visited , adj1);
+
+        int countB[] = new int[2];
+        int markB[] = new int[m];
+        Arrays.fill(markB , -1);
+        markB[0] = 0;
+        visited = new boolean[m];
+        dfs(0 , countB , markB , visited , adj2);
+
+        int maxi = Math.max(countB[0] , countB[1]);
+
+        int ans[] = new int[n];
+        for(int i = 0; i < n; i++) {
+            if(markA[i] == 0) {
+                ans[i] = countA[0] + maxi;
+            }
+            else {
+                ans[i] = countA[1] + maxi;
+            }
+        }
+        return ans;
+    }
+}
