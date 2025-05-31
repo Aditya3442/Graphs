@@ -1,0 +1,71 @@
+class Solution {
+    List<Integer> rank = new ArrayList<>();
+    List<Integer> parent = new ArrayList<>();
+
+    public int parent(int node) {
+        if(node == parent.get(node))
+          return node;
+        int x = parent(parent.get(node));
+        parent.set(node , x);
+        return x;
+    }
+    public void unionByRank(int u , int v) {
+        int pu = parent(u);
+        int pv = parent(v);
+        if(pu == pv)
+          return;
+        if(rank.get(pu) > rank.get(pv)) {
+            parent.set(pv , pu);
+        }
+        else if(rank.get(pu) < rank.get(pv)) {
+            parent.set(pu , pv);
+        }
+        else {
+            parent.set(pv , pu);
+            int r = rank.get(pu) + 1;
+            rank.set(pu , r);
+        }
+    }
+    public List<List<String>> accountsMerge(List<List<String>> accounts) {
+        int n = accounts.size();
+        for(int i = 0; i < n; i++) {
+           rank.add(0);
+           parent.add(i);
+        }
+        HashMap<String , Integer> map = new HashMap<>();
+        for(int i = 0; i < accounts.size(); i++) {
+            for(int j = 1; j < accounts.get(i).size(); j++) {
+                if(!map.containsKey(accounts.get(i).get(j))) {
+                    map.put(accounts.get(i).get(j) , i);
+                }
+                else {
+                    unionByRank(map.get(accounts.get(i).get(j)) , i);
+                }
+            }
+        }
+
+        List<List<String>> list = new ArrayList<>();
+        for(int i = 0; i < n; i++)
+           list.add(new ArrayList<>());
+        for(Map.Entry<String , Integer> mp : map.entrySet()) {
+            String key = mp.getKey();
+            int value = mp.getValue();
+            int up = parent(value);
+            list.get(up).add(key);
+        }
+
+        List<List<String>> ans = new ArrayList<>();
+        for(int i = 0; i < n; i++) {
+            if(list.get(i).size() == 0)
+              continue;
+            List<String> l = new ArrayList<>();
+            l.add(accounts.get(i).get(0));
+            Collections.sort(list.get(i));
+            for(String s : list.get(i)) {
+                l.add(s);
+            }
+            ans.add(l);
+        }
+        return ans;
+    }
+}
