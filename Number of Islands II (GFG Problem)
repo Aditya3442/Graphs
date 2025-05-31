@@ -1,0 +1,77 @@
+class Solution {
+    int[][] directions = {{-1 , 0} , {0 , 1} , {1 , 0} , {0 , -1}};
+    List<Integer> rank = new ArrayList<>();
+    List<Integer> parent = new ArrayList<>();
+    
+    public int parentNode(int node) {
+        if(node == parent.get(node))
+           return node;
+        int x = parentNode(parent.get(node));
+        parent.set(node , x);
+        return x;
+    }
+    
+    public void unionByRank(int u , int v) {
+        int pu = parentNode(u);
+        int pv = parentNode(v);
+        
+        if(pu == pv)
+          return;
+        if(rank.get(pu) > rank.get(pv)) {
+            parent.set(pv , pu);
+        }
+        else if(rank.get(pu) < rank.get(pv)) {
+            parent.set(pu , pv);
+        }
+        else {
+            parent.set(pv , pu);
+            int r = rank.get(pu) + 1;
+            rank.set(pu , r);
+        }
+    }
+    
+    
+    public List<Integer> numOfIslands(int rows, int cols, int[][] operators) {
+        // Your code here
+        int size = rows * cols;
+        for(int i = 0; i < size; i++) {
+            rank.add(0);
+            parent.add(i);
+        }
+        List<Integer> ans = new ArrayList<>();
+        boolean[][] visited = new boolean[rows][cols];
+    
+        int distance = 0;
+        for(int arr[] : operators) {
+            int u = arr[0];
+            int v = arr[1];
+            if(visited[u][v]) {
+                ans.add(distance);
+                continue;
+            }
+            visited[u][v] = true;
+            distance++;
+            int num1 = u * cols + v;
+             
+            for(int dir[] : directions) {
+                int newRow = dir[0] + u;
+                int newCol = dir[1] + v;
+                if(newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols && visited[newRow][newCol]) {
+                    int parent1 = parentNode(num1);
+                    int num2 = newRow * cols + newCol;
+                    int parent2 = parentNode(num2);
+                    
+                    if(parent1 == parent2) {
+                        continue;
+                    }
+                    
+                    unionByRank(num1 , num2);
+                    distance--;
+                    
+                }
+            }
+            ans.add(distance);
+        }
+        return ans;
+    }
+}
