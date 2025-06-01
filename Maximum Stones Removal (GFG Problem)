@@ -1,0 +1,68 @@
+class Solution {
+    List<Integer> rank= new ArrayList<>();
+    List<Integer> parent = new ArrayList<>();
+    
+    public int findParent(int node) {
+        if(node == parent.get(node)) 
+            return node;
+        int x = findParent(parent.get(node));
+        parent.set(node , x);
+        return x;
+    }
+    
+    public void unionByRank(int u , int v) {
+        int pu = findParent(u);
+        int pv = findParent(v);
+        
+        if(pu == pv)
+          return;
+        if(rank.get(pu) > rank.get(pv)) {
+            parent.set(pv , pu);
+        }
+        else if(rank.get(pu) < rank.get(pv)) {
+            parent.set(pu , pv);
+        }
+        else {
+            parent.set(pv , pu);
+            int s = rank.get(pu) + 1;
+            rank.set(pu , s);
+        }
+    }
+    int maxRemove(int[][] stones, int n) {
+        // Code here
+        
+        int rows = 0;
+        int cols = 0;
+        
+        for(int stone[] : stones) {
+            rows = Math.max(rows , stone[0]);
+            cols = Math.max(cols , stone[1]);
+        }
+        rows++;
+        cols++;
+        
+        for(int i = 0; i < rows + cols; i++) {
+            rank.add(0);
+            parent.add(i);
+        }
+        
+        for(int[] stone : stones) {
+            int u = stone[0];
+            int v = stone[1];
+            
+            v = rows + v;
+            
+            unionByRank(u , v);
+        }
+        
+        Set<Integer> set = new HashSet<>();
+        for(int[] stone : stones) {
+            int u = findParent(stone[0]);
+            int v = findParent(stone[1]);
+            
+            set.add(u);
+        }
+        return n - set.size();
+        
+    }
+};
