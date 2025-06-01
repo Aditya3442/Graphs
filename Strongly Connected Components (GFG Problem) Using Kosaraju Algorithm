@@ -1,0 +1,55 @@
+class Solution {
+    // Function to find number of strongly connected components in the graph.
+    public static void dfs(int index , boolean[] visited , ArrayList<ArrayList<Integer>> adj) {
+        visited[index] = true;
+        
+        for(int x : adj.get(index)) {
+            if(!visited[x]) 
+                dfs(x , visited , adj);   
+        }
+    }
+    public static void dfsStack(int index , Stack<Integer> stack , boolean[] visited , ArrayList<ArrayList<Integer>> adj) {
+        visited[index] = true;
+        
+        for(int x : adj.get(index)) {
+            if(!visited[x]) 
+                dfsStack(x , stack , visited , adj);   
+        }
+        stack.push(index);
+    }
+    public int kosaraju(ArrayList<ArrayList<Integer>> adj) {
+        // code here
+        int n = adj.size();
+        boolean[] visited = new boolean[n];
+        Stack<Integer> stack = new Stack<>();
+        for(int i = 0; i < n; i++) {
+            if(!visited[i]) {
+                dfsStack(i , stack , visited , adj);
+            }
+        }
+        
+        
+        ArrayList<ArrayList<Integer>> rev = new ArrayList<>();
+        for(int i = 0; i < n; i++) 
+           rev.add(new ArrayList<>());
+        for(int i = 0; i < n; i++) {
+            for(int j = 0; j < adj.get(i).size(); j++) {
+                int u = i;
+                int v = adj.get(i).get(j);
+                rev.get(v).add(u);
+            }
+        }
+        
+        
+        visited = new boolean[n];
+        int ans = 0;
+        while(!stack.isEmpty()) {
+            int x = stack.pop();
+            if(!visited[x]) {
+                ans++;
+                dfs(x , visited , rev);
+            }
+        }
+        return ans;
+    }
+}
